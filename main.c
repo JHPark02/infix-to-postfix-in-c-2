@@ -3,8 +3,8 @@
 #include <string.h>
 #include <ctype.h>
 #define STACK_SIZE 100
-#define INFIX_SIZE 28
-#define PROCESSED_INFIX_SIZE INFIX_SIZE+2
+#define INFIX_SIZE 100
+#define PROCESSED_INFIX_SIZE 100
 
 // typedef int element; 
 // typedef struct {
@@ -44,13 +44,6 @@ char getTop()
     else
         return stack[top];
 }
-void prtStack()
-{
-    printf("current stack : ");
-    for (int i = 0; i <= top; i++)
-        printf("%c", stack[i]);
-    printf("\n");
-}
 
 int getPriority(char c)
 {
@@ -64,53 +57,64 @@ int getPriority(char c)
 char infixToPostfix(char infix[INFIX_SIZE])
 {
     char infix_[PROCESSED_INFIX_SIZE] = "";
-    static char output[INFIX_SIZE] = "";
+    static char output[PROCESSED_INFIX_SIZE] = "";
     char temp;
+    int i = 0;
 
     strcat(infix_, "(");
     strcat(infix_, infix);
     strcat(infix_, ")");
 
-    for (int i = 0; i < PROCESSED_INFIX_SIZE - 1; i++)
+    while(infix_[i] != '\0')
     {
         if (isdigit(infix_[i]))
         {
             temp = infix_[i];
             strncat(output, &temp, 1);
+            i++;
         }
 
         else if (infix_[i] == '(')
         {
             push('(');
+            i++;
         }
 
         else if (infix_[i] == ')')
         {
             while (getTop() != '(')
             {
+                strcat(output, " ");
                 temp = pop();
                 strncat(output, &temp, 1);
+         
             }
-
             pop();
+            i++;
         }
 
         else
         {
+            strcat(output, " ");
+
             while (getPriority(infix_[i]) <= getPriority(getTop())) 
             {
                 temp = pop();
                 strncat(output, &temp, 1);
+                strcat(output, " ");
             }
 
             push(infix_[i]);
+            i++;
         }
+
     }
 
     while (isEmpty() == 0)
     {
         temp = pop();
         strncat(output, &temp, 1);
+        strcat(output, " ");
     }
 
     printf("%s", output);
@@ -121,7 +125,7 @@ char infixToPostfix(char infix[INFIX_SIZE])
 int main(void)
 {
     //char infix[INFIX_SIZE] = "32+8*4/8+6"; // 길이 10
-    char infix[INFIX_SIZE] = "3+8*4/8+6+5+3*1*2*5+9/(4+5)"; // 길이 28
+    char infix[INFIX_SIZE] = "31+8*4/8+6+5+3*1*2*5+9/(4+5)"; // 길이 28
     char processedInfix[INFIX_SIZE];
 
     strcpy(processedInfix, infixToPostfix(infix));
